@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
 *
 * @author Sandra Shtabnaya
@@ -16,7 +18,36 @@ public class Course {
 	private String location;
 	private String conflictingCourse;
 	private String day;
-	
+
+	/**
+	 * Creates a new course from a schedule file.
+	 * @param file the Scanner reading the .csv file.
+	 * @throws IllegalFileException if the schedule file has improper formatting.
+	 */
+	public Course(Scanner file) throws IllegalFileException{
+		String line = file.nextLine();
+		int totalDifferingClassTimes = countMeetingTimes(line, ',') - 5;
+
+		//if the given class in the line has a single meeting time.
+		if(totalDifferingClassTimes == 0){
+			parseCourse(line, 1);
+		}
+
+		if((line.toUpperCase().contains("ONLINE") || line.toUpperCase().contains("TBA"))
+				&& totalDifferingClassTimes != -2){
+			file.close();
+			throw new IllegalFileException("Check commas.");
+		}
+		else if(totalDifferingClassTimes < 0 && (!line.toUpperCase().contains("ONLINE")
+				&& !line.toUpperCase().contains("TBA"))){
+			file.close();
+			throw new IllegalFileException("Check commas.");
+		}
+
+		//if the given class in the line has several meeting times.
+		parseCourse(line, totalDifferingClassTimes);
+	}
+
 	public void setCredits(int cred){
 		credits = cred;
 	}

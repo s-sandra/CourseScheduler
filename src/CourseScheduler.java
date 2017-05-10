@@ -3,6 +3,7 @@
  * @author Sandra Shtabnaya
  */
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
@@ -26,8 +27,12 @@ public class CourseScheduler {
 			readSchedule("files/" + args[0]);
 			printSchedule();
 		}
-		catch(Exception e){
+		catch(FileNotFoundException e){
 			e.printStackTrace();
+			System.exit(22);
+		}
+		catch(IllegalFileException e){
+			e.getMessage();
 			System.exit(22);
 		}
 		
@@ -56,7 +61,7 @@ public class CourseScheduler {
 	 * readSchedule - this function reads in the given prospective classes
 	 * to add to the schedule. 
 	 */
-	public static void readSchedule(String fileName) throws Exception{
+	public static void readSchedule(String fileName) throws FileNotFoundException, IllegalFileException{
 		Scanner scan = new Scanner(new File(fileName));
 		
 		makeSchedule();
@@ -65,7 +70,7 @@ public class CourseScheduler {
 			String line = scan.nextLine();
 			int totalDifferingClassTimes = countMatches(line, ',') - 5;
 			
-			//if the given class in the line has a uniform meeting time.
+			//if the given class in the line has a single meeting time.
 			if(totalDifferingClassTimes == 0){
 				parseCourse(line, 1);
 			}
@@ -73,15 +78,15 @@ public class CourseScheduler {
 			if((line.toUpperCase().contains("ONLINE") || line.toUpperCase().contains("TBA"))
 					&& totalDifferingClassTimes != -2){
 				scan.close();
-				throw new Exception("FILE FORMATTING ERROR: Check commas");
+				throw new IllegalFileException("Check commas.");
 			}
 			else if(totalDifferingClassTimes < 0 && (!line.toUpperCase().contains("ONLINE") 
 					&& !line.toUpperCase().contains("TBA"))){
 				scan.close();
-				throw new Exception("FILE FORMATTING ERROR: Check commas");
+				throw new IllegalFileException("Check commas.");
 			}
 			
-			//if the given class in the line has an irregular meeting time. 
+			//if the given class in the line has several meeting times.
 			parseCourse(line, totalDifferingClassTimes);
 		}
 		
