@@ -23,7 +23,7 @@ public class CourseScheduler {
 	public static void main(String args[]){
 		
 		try{
-			readSchedule(args[0]);
+			readSchedule("files/" + args[0]);
 			printSchedule();
 		}
 		catch(Exception e){
@@ -57,7 +57,7 @@ public class CourseScheduler {
 	 * to add to the schedule. 
 	 */
 	public static void readSchedule(String fileName) throws Exception{
-		Scanner scan = new Scanner(new File("files/" + fileName));
+		Scanner scan = new Scanner(new File(fileName));
 		
 		makeSchedule();
 		
