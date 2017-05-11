@@ -5,7 +5,7 @@ import java.io.File;
 import java.util.Collections;
 
 /**
- * This class creates a visual representation of a schedule file.
+ * This class stores attributes of a weekly schedule.
  * @author Sandra Shtabnaya
  */
 public class Schedule {
@@ -154,7 +154,7 @@ public class Schedule {
     private boolean hasValidTime(Course event){
         boolean isValid = true;
 
-        if(event.getLength() >= 60){
+        if(event.length() >= 60){
             isValid = false;
         }
         else if(event.getStartTimeOfDay().equals("PM") && event.getStartHr() < 12
@@ -234,6 +234,7 @@ public class Schedule {
      */
     public String toString(){
         String display = "\n";
+        SchedulePrinter printer = new SchedulePrinter();
 
         //goes through each day in the week.
         for(int i = 0; i < 6; i++){
@@ -246,75 +247,31 @@ public class Schedule {
                 Course earliest = courses.get(0);
                 Course latest = courses.get(courses.size() - 1);
 
-                Header header = new Header(i);
-                display += header.makeHeader(earliest, latest);
+                //adds the header to the weekday's schedule
+                display += printer.makeHeader(i, courses.size(), earliest, latest);
 
                 //goes through the sorted list of courses in the week day.
                 for(int j = 0; j < courses.size(); j++){
 
-                    //prints the course name to the screen and adjusts the start of the
-                    //time line for uniform appearance.
+                    //creates the timeline for the course.
                     Course event = courses.get(j);
-                    System.out.print(event.getName());
-                    shiftMinutes(event.getName().length(), range, event, earliest);
-                    System.out.print(minutes);
+                    display += printer.makeTimelineFor(event);
 
-
-                    int sHr = event.getStartHr();
-                    int sMin = event.getStartMin();
-                    String sTime = event.getStartTimeOfDay();
-
-                    int eHr = event.getEndHr();
-                    int eMin = event.getEndMin();
-                    String eTime = event.getEndTimeOfDay();
-
-                    //prints out the start and end times of the class.
-                    String times = "       ";
-
-                    //if the starting minute is one digit
-                    if(sMin < 10){
-                        times += sHr + ":0" + sMin + " " + sTime + " - ";
-                    }
-                    else{
-                        times += sHr + ":" + sMin + " " + sTime + " - ";;
+                    //finds the next course in the week's schedule, if applicable.
+                    Course next = null;
+                    if(j + 1 < courses.size()){
+                        next = courses.get(j);
                     }
 
-                    //if the ending minute is one digit.
-                    if(eMin < 10){
-                        times += eHr + ":0" + eMin + " " + eTime;
-                    }
-                    else{
-                        times += eHr + ":" + eMin + " " + eTime;;
-                    }
-
-                    System.out.print(times);
-
-                    if(j != courses.size() - 1){
-                        Course nextClass = courses.get(j + 1);
-
-                        int sHrGap = event.getEndHr();
-                        int sMinGap = event.getEndMin();
-                        boolean sTimeGap = isMorning(event.getEndTimeOfDay());
-
-                        int eHrGap = nextClass.getStartHr();
-                        int eMinGap = nextClass.getStartMin();
-                        boolean eTimeGap = isMorning(nextClass.getStartTimeOfDay());
-
-                        //determines the time until next class and prints out the walking times and destinations.
-                        int walkingTime = getFiveMinuteBreak(eHrGap, eMinGap, eTimeGap, sHrGap, sMinGap, sTimeGap);
-                        String breakTime = convertToHours(walkingTime);
-                        System.out.print("       " + breakTime + " to get from " + event.getLocation() +
-                                " to " + nextClass.getLocation());
-
-                    }
-
-                    System.out.print("\n");
+                    //prints the walking times between this course and the next.
+                    display += printer.getWalkingTimesFor(event, next);
+                    display += "\n";
                 }
             }
 
             //adds space between week days only if it is not the end of the week.
-            if(i != weekDays.length && !week.get(i).isEmpty()){
-                System.out.print("\n\n\n\n");
+            if(i != 6 && !week.get(i).isEmpty()){
+                display += "\n\n\n\n";
             }
         }
         display += getReport();

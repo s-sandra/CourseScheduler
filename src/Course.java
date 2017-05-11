@@ -54,6 +54,25 @@ public class Course implements Comparable<Course>{
 
 
 	/**
+	 * Directly constructs a new course.
+	 * @param sHr the starting hour.
+	 * @param sMin the starting minute.
+	 * @param sTime the starting time of day.
+	 * @param eHr the ending hour.
+	 * @param eMin the ending minute.
+	 * @param eTime the ending time of day.
+	 */
+	public Course(int sHr, int sMin, String sTime, int eHr, int eMin, String eTime){
+		startTimeOfDay = sTime;
+		startHour = sHr;
+		startMinute = sMin;
+		endTimeOfDay = eTime;
+		endHour = eHr;
+		endMinute = eMin;
+	}
+
+
+	/**
 	 * This helper method calculate the amount of differing class times
 	 * for a course by counting the number of commas separating dates and
 	 * class times.
@@ -166,6 +185,7 @@ public class Course implements Comparable<Course>{
 		}
 		return true;
 	}
+
 
 
 	/**
@@ -409,7 +429,7 @@ public class Course implements Comparable<Course>{
 	 * This method determines the length of the class in multiples of five.
 	 * @return the amount of five minutes in the class length.
 	 */
-	public int getLength(){
+	public int length(){
 		int minuteCount;
 		int totalHrs;
 		int totalMins;
