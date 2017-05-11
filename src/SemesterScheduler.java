@@ -15,7 +15,7 @@ public class SemesterScheduler {
 			System.exit(22);
 		}
 		catch(IllegalFileException e){
-			e.getMessage();
+			System.out.println(e.getMessage());
 			System.exit(22);
 		}
 	}

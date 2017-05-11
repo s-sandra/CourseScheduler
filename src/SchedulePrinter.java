@@ -36,7 +36,7 @@ public class SchedulePrinter {
         range = getScheduleRange(earliest, latest);
 
         //adjusts the table accordingly for uniform appearance.
-        header += "\n----" + weekDay;
+        header = "\n----" + weekDay;
         shiftTable(earliestHr);
         header += "\n" + scale;
 
@@ -142,6 +142,8 @@ public class SchedulePrinter {
      * @param earliestHr the start hour of the earliest class.
      */
     private void shiftScale(int earliestHr){
+        int timeRange;
+        scale = "";
 
         //adds whitespace between the course name and the start
         //of the time line.
@@ -153,10 +155,10 @@ public class SchedulePrinter {
         int prevHour = earliestHr;
 
         //determines how many hours are in the time range.
-        range = (range / 12) + 1;
+        timeRange = (range / 12) + 1;
 
         //adds hours and whitespace to the scale.
-        for(int i = 1; i <= range; i++){
+        for(int i = 1; i <= timeRange; i++){
 
             //if the hour is past noon
             if(hour == 13){
@@ -201,7 +203,7 @@ public class SchedulePrinter {
      * @return the header for the course's timeline.
      */
     private String makeTimelineHeaderFor(Course event){
-        String timeline = "\n" + event.getName();
+        String timeline = event.getName();
 
         //adds white space between the class name and the start of its time line.
         for(int i = event.getName().length(); i < LONGEST_NAME_LEN + 4; i++){

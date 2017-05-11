@@ -49,7 +49,7 @@ public class Course implements Comparable<Course>{
 			throw new IllegalFileException("Check commas.");
 		}
 
-		parseCourse(file);
+		parseCourse(line);
 	}
 
 
@@ -96,10 +96,11 @@ public class Course implements Comparable<Course>{
 	/**
 	 * This helper method parses a line from the schedule file and
 	 * sets the appropriate values for the class.
-	 * @param file the Scanner reading the csv file.
+	 * @param line the line containing the course information.
 	 */
-	private void parseCourse(Scanner file){
+	private void parseCourse(String line){
 
+		Scanner file = new Scanner(line);
 		file.useDelimiter(",");
 
 		//takes in the first four strings representing the
@@ -107,8 +108,7 @@ public class Course implements Comparable<Course>{
 		courseName = file.next();
 		courseTitle = file.next().trim();
 		credits = Integer.valueOf(file.next().trim());
-
-		parseLocations(file);
+		location = file.next().trim();
 
 		//if the class is online, does not look for dates.
 		if(location.toUpperCase().equals("ONLINE")){
@@ -139,8 +139,8 @@ public class Course implements Comparable<Course>{
 		//amount of differing class times.
 		for(int i = 0; i < differingTimes; i++) {
 			meetingDays = file.next().trim();
-			startTime = file.next();
-			endTime = file.next();
+			startTime = file.next().trim();
+			endTime = file.next().trim();
 
 			//while the meetingDays string has more week days
 			while (meetingDays.length() > 0) {
@@ -234,20 +234,20 @@ public class Course implements Comparable<Course>{
 	}
 
 
-	/**
-	 * This helper method reads in the string
-	 * containing a class' location.
-	 * @param file the Scanner reading the csv file.
-	 */
-	private void parseLocations(Scanner file){
-		String hall = file.next();
-
-		location = hall;
-
-		while(file.hasNext()){
-			location = hall + " " + file.next();
-		}
-	}
+//	/**
+//	 * This helper method reads in the string
+//	 * containing a class' location.
+//	 * @param file the Scanner reading the csv file.
+//	 */
+//	private void parseLocations(Scanner file){
+//		String hall = file.next();
+//
+//		location = hall.trim();
+//
+//		while(file.hasNext()){
+//			location = hall + " " + file.next();
+//		}
+//	}
 
 	
 	public void setDay(char date){

@@ -47,24 +47,29 @@ public class Schedule {
     }
 
 
+    boolean isNewCourse(Course course){
+        for(Course event : classes){
+            if(event.getTitle().equals(course.getTitle())){
+                return false;
+            }
+        }
+        return true;
+    }
     /**
      * This method adds a non-conflicting course to the schedule.
      * It also updates the credit count.
      * @param course the course to add.
      */
     void addCourse(Course course){
-        for(Course event : classes){
-            if(event.getTitle().equals(course.getTitle())){
-                return;
-            }
-        }
 
         //checks to see if the class times are valid
         if(!hasValidTime(course)){
             return;
         }
 
-        credits += course.getCredits();
+        if(isNewCourse(course)){
+            credits += course.getCredits();
+        }
         classes.add(course);
         String day = course.getDay();
 
@@ -200,8 +205,12 @@ public class Schedule {
         String report = "";
 
         //provides a summary of the classes added and the total credits.
-        System.out.println("----SUMMARY---------------------------");
+        report += "----SUMMARY---------------------------\n";
         for(Course event : classes){
+            //checks to see if the class has already been entered in the report.
+            if(report.contains(event.getTitle())){
+                continue;
+            }
             report += event.toString() + "\n";
         }
         report += "Total Credits: " + credits + "\n";
@@ -249,6 +258,7 @@ public class Schedule {
 
                 //adds the header to the weekday's schedule
                 display += printer.makeHeader(i, courses.size(), earliest, latest);
+                display += "\n";
 
                 //goes through the sorted list of courses in the week day.
                 for(int j = 0; j < courses.size(); j++){
@@ -260,7 +270,7 @@ public class Schedule {
                     //finds the next course in the week's schedule, if applicable.
                     Course next = null;
                     if(j + 1 < courses.size()){
-                        next = courses.get(j);
+                        next = courses.get(j + 1);
                     }
 
                     //prints the walking times between this course and the next.
