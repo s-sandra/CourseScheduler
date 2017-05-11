@@ -5,7 +5,7 @@ import java.util.Scanner;
 * @author Sandra Shtabnaya
 */
 
-public class Course {
+public class Course implements Comparable<Course>{
 	private int startHour;
 	private int startMinute;
 	private int endHour;
@@ -20,6 +20,7 @@ public class Course {
 	private String day;
 	private int differingTimes; //stores the amount of different meeting times.
 	private Schedule schedule;
+
 
 	/**
 	 * Creates a new course from a schedule file.
@@ -270,8 +271,7 @@ public class Course {
 
 
 	/**
-	 * Determines whether the passed course conflicts with
-	 * this course.
+	 * Determines whether the passed course conflicts with this course.
 	 * @param course the course in question.
 	 * @return whether a time conflict exists between the passed course
 	 * and this course.
@@ -410,9 +410,9 @@ public class Course {
 	 * @return the amount of five minutes in the class length.
 	 */
 	public int getLength(){
-		int minuteCount = 0;
-		int totalHrs = 0;
-		int totalMins = 0;
+		int minuteCount;
+		int totalHrs;
+		int totalMins;
 
 		//if the interval starts and ends in the same time of day
 		if(startTimeOfDay.equals(endTimeOfDay)){
@@ -476,6 +476,50 @@ public class Course {
 		minuteCount /= 5;
 
 		return minuteCount;
+	}
+
+
+	/**
+	 * This method compares two courses based on start time.
+	 * @param course the first course to compare this course with.
+	 * @return a positive number if this starts later,
+	 * a negative number if this starts earlier, and
+	 * zero if both courses start at the same time.
+	 */
+	public int compareTo(Course course){
+		int otherStartHr = course.getStartHr();
+		int otherStartMin = course.getStartMin();
+		String otherStartTimeOfDay = course.getStartTimeOfDay();
+
+		//if both classes start in the same time of day
+		if(otherStartTimeOfDay.equals(startTimeOfDay)){
+
+			//if both classes start at the same hour,
+			if(startHour == otherStartHr){
+
+				//if both classes start at the same minute,
+				if(startMinute == otherStartMin){
+					return 0;
+				}
+				//if this class starts earlier,
+				else if(startMinute < otherStartMin){
+					return -1;
+				}
+				return 1;
+			}
+
+			//if the current class starts at noon
+			if(startHour == 12 || startHour < otherStartHr){
+				return -1;
+			}
+		}
+
+		//if this class starts in the morning, and the other class starts in the afternoon,
+		else if(startTimeOfDay.equals("AM") && otherStartTimeOfDay.equals("PM")){
+			return -1;
+		}
+
+		return 1;
 	}
 
 
