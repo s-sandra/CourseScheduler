@@ -2,6 +2,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
+import java.util.Collections;
 
 /**
  * This class creates a visual representation of a schedule file.
@@ -197,17 +198,125 @@ public class Schedule {
      */
     private String getReport(){
         String report = "";
+
+        //provides a summary of the classes added and the total credits.
+        System.out.println("----SUMMARY---------------------------");
         for(Course event : classes){
             report += event.toString() + "\n";
         }
+        report += "Total Credits: " + credits + "\n";
 
-        report += "Total Credits: " + credits;
+        //provides a summary of invalid classes due to a time conflict.
+        if(conflictingCourses.size() > 0){
+            System.out.println("\n----TIME CONFLICTS---------------------");
+            for(Course event: conflictingCourses){
+                System.out.println(event.getTitle() + " conflicts with " + event.getConflict() + " on " + event.getDay());
+            }
+        }
+
+        if(invalidCourses.size() > 0){
+            System.out.println("\n----ERRORS-----------------------------");
+            for(Course event: invalidCourses){
+                System.out.println(event.getTitle() + " cannot last from " + event.getStartHr() + " "
+                        + event.getStartTimeOfDay() + " to " + event.getEndHr() + " "
+                        + event.getEndTimeOfDay());
+            }
+        }
+
         return report;
     }
 
 
+    /**
+     * Returns the visual representation of the schedule.
+     * @return the time line for each day, including the time between classes,
+     * locations, meeting times of classes, and schedule summary.
+     */
     public String toString(){
-        String display = "";
+        String display = "\n";
+
+        //goes through each day in the week.
+        for(int i = 0; i < 6; i++){
+
+            //prints out the day only if it contains classes.
+            if(week.get(i).size() > 0){
+
+                ArrayList<Course> courses = week.get(i);
+                Collections.sort(courses);
+                Course earliest = courses.get(0);
+                Course latest = courses.get(courses.size() - 1);
+
+                Header header = new Header(i);
+                display += header.makeHeader(earliest, latest);
+
+                //goes through the sorted list of courses in the week day.
+                for(int j = 0; j < courses.size(); j++){
+
+                    //prints the course name to the screen and adjusts the start of the
+                    //time line for uniform appearance.
+                    Course event = courses.get(j);
+                    System.out.print(event.getName());
+                    shiftMinutes(event.getName().length(), range, event, earliest);
+                    System.out.print(minutes);
+
+
+                    int sHr = event.getStartHr();
+                    int sMin = event.getStartMin();
+                    String sTime = event.getStartTimeOfDay();
+
+                    int eHr = event.getEndHr();
+                    int eMin = event.getEndMin();
+                    String eTime = event.getEndTimeOfDay();
+
+                    //prints out the start and end times of the class.
+                    String times = "       ";
+
+                    //if the starting minute is one digit
+                    if(sMin < 10){
+                        times += sHr + ":0" + sMin + " " + sTime + " - ";
+                    }
+                    else{
+                        times += sHr + ":" + sMin + " " + sTime + " - ";;
+                    }
+
+                    //if the ending minute is one digit.
+                    if(eMin < 10){
+                        times += eHr + ":0" + eMin + " " + eTime;
+                    }
+                    else{
+                        times += eHr + ":" + eMin + " " + eTime;;
+                    }
+
+                    System.out.print(times);
+
+                    if(j != courses.size() - 1){
+                        Course nextClass = courses.get(j + 1);
+
+                        int sHrGap = event.getEndHr();
+                        int sMinGap = event.getEndMin();
+                        boolean sTimeGap = isMorning(event.getEndTimeOfDay());
+
+                        int eHrGap = nextClass.getStartHr();
+                        int eMinGap = nextClass.getStartMin();
+                        boolean eTimeGap = isMorning(nextClass.getStartTimeOfDay());
+
+                        //determines the time until next class and prints out the walking times and destinations.
+                        int walkingTime = getFiveMinuteBreak(eHrGap, eMinGap, eTimeGap, sHrGap, sMinGap, sTimeGap);
+                        String breakTime = convertToHours(walkingTime);
+                        System.out.print("       " + breakTime + " to get from " + event.getLocation() +
+                                " to " + nextClass.getLocation());
+
+                    }
+
+                    System.out.print("\n");
+                }
+            }
+
+            //adds space between week days only if it is not the end of the week.
+            if(i != weekDays.length && !week.get(i).isEmpty()){
+                System.out.print("\n\n\n\n");
+            }
+        }
         display += getReport();
         return display;
     }
