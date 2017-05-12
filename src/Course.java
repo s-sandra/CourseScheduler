@@ -189,7 +189,7 @@ public class Course implements Comparable<Course>{
 	private boolean isMorning(String s){
 		s = s.toUpperCase();
 		String timeOfDay = s;
-		return timeOfDay.contains("P");
+		return timeOfDay.contains("A");
 	}
 
 
@@ -247,7 +247,15 @@ public class Course implements Comparable<Course>{
 	private void parseLocations(String line){
 		Scanner scanLoc = new Scanner(line);
 		String hall = scanLoc.next();
-		locations.add(hall + " " + scanLoc.next());
+
+		//accounts for online courses, or TBA locations.
+		if(scanLoc.hasNext()){
+			locations.add(hall + " " + scanLoc.next());
+		}
+		else{
+			locations.add(hall);
+		}
+
 
 		//if the course has more than one meeting place,
 		while(scanLoc.hasNext()){
@@ -412,9 +420,9 @@ public class Course implements Comparable<Course>{
 		}
 
 		//if there is a conflict, stores the name of the
-		//class this course conflicts with.
+		//this class in the conflicting course.
 		if (conflicting) {
-			setConflict(course.getTitle());
+			course.setConflict(courseName);
 		}
 
 		return conflicting;

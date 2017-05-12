@@ -115,6 +115,7 @@ public class Schedule {
 
             for(int j = 0; j < daySize; j++){
                 if(classes.get(j).getName().equals(event.getName())){
+                    credits -= classes.get(j).getCredits();
                     classes.remove(j);
                     daySize--;
                 }
@@ -187,7 +188,7 @@ public class Schedule {
      */
     private boolean isNewConflict(Course event){
 
-        for(Course lecture : invalidCourses){
+        for(Course lecture : conflictingCourses){
             if(lecture.getName().equals(event.getName())){
                 return false;
             }
@@ -217,18 +218,18 @@ public class Schedule {
 
         //provides a summary of invalid classes due to a time conflict.
         if(conflictingCourses.size() > 0){
-            System.out.println("\n----TIME CONFLICTS---------------------");
+            report += "\n----TIME CONFLICTS---------------------";
             for(Course event: conflictingCourses){
-                System.out.println(event.getTitle() + " conflicts with " + event.getConflict() + " on " + event.getDay());
+                report += "\n" + event.getTitle() + " conflicts with " + event.getConflict() + " on " + event.getDay();
             }
         }
 
         if(invalidCourses.size() > 0){
-            System.out.println("\n----ERRORS-----------------------------");
+            report += "\n----ERRORS-----------------------------";
             for(Course event: invalidCourses){
-                System.out.println(event.getTitle() + " cannot last from " + event.getStartHr() + " "
+                report += "\n" + event.getTitle() + " cannot last from " + event.getStartHr() + " "
                         + event.getStartTimeOfDay() + " to " + event.getEndHr() + " "
-                        + event.getEndTimeOfDay());
+                        + event.getEndTimeOfDay();
             }
         }
 
