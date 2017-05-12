@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -15,7 +16,8 @@ public class Course implements Comparable<Course>{
 	private String endTimeOfDay;
 	private String courseName; //stores the course department and number.
 	private String courseTitle; //stores the name of the course
-	private String location;
+	private ArrayList<String> locations = new ArrayList<>(); //stores the meeting places of the course.
+	private String location; //stores the meeting place of the course.
 	private String conflictingCourse;
 	private String day;
 	private int differingTimes; //stores the amount of different meeting times.
@@ -108,14 +110,14 @@ public class Course implements Comparable<Course>{
 		courseName = file.next();
 		courseTitle = file.next().trim();
 		credits = Integer.valueOf(file.next().trim());
-		location = file.next().trim();
+		parseLocations(file.next().trim());
 
 		//if the class is online, does not look for dates.
-		if(location.toUpperCase().equals("ONLINE")){
+		if(locations.get(0).toUpperCase().equals("ONLINE")){
 			courseTitle += " ONLINE";
 			return;
 		}
-		else if(location.toUpperCase().equals("TBA")){
+		else if(locations.get(0).toUpperCase().equals("TBA")){
 			courseTitle += " TBA";
 			return;
 		}
@@ -156,6 +158,14 @@ public class Course implements Comparable<Course>{
 				endMinute = parseMinute(endTime);
 				setEndTime(isMorning(endTime));
 
+				if(locations.size() > 1){
+					location = locations.get(0);
+					locations.remove(0);
+				}
+				else{
+					location = locations.get(0);
+				}
+
 				//adds the course to the schedule.
 				schedule.addCourse(this);
 
@@ -179,13 +189,8 @@ public class Course implements Comparable<Course>{
 	private boolean isMorning(String s){
 		s = s.toUpperCase();
 		String timeOfDay = s;
-
-		if(timeOfDay.contains("P")){
-			return false;
-		}
-		return true;
+		return timeOfDay.contains("P");
 	}
-
 
 
 	/**
@@ -234,23 +239,24 @@ public class Course implements Comparable<Course>{
 	}
 
 
-//	/**
-//	 * This helper method reads in the string
-//	 * containing a class' location.
-//	 * @param file the Scanner reading the csv file.
-//	 */
-//	private void parseLocations(Scanner file){
-//		String hall = file.next();
-//
-//		location = hall.trim();
-//
-//		while(file.hasNext()){
-//			location = hall + " " + file.next();
-//		}
-//	}
+	/**
+	 * This helper method reads in the string
+	 * containing a class' location.
+	 * @param line the line containing the location information
+	 */
+	private void parseLocations(String line){
+		Scanner scanLoc = new Scanner(line);
+		String hall = scanLoc.next();
+		locations.add(hall + " " + scanLoc.next());
+
+		//if the course has more than one meeting place,
+		while(scanLoc.hasNext()){
+			locations.add(hall + " " + scanLoc.next());
+		}
+	}
 
 	
-	public void setDay(char date){
+	private void setDay(char date){
 		if(date == 'M'){
 				day = "Monday";
 		}
@@ -271,7 +277,7 @@ public class Course implements Comparable<Course>{
 		}
 	}
 	
-	public void setStartTime(boolean isMorning){
+	private void setStartTime(boolean isMorning){
 		if(isMorning){
 			startTimeOfDay = "AM";
 		}
@@ -280,7 +286,7 @@ public class Course implements Comparable<Course>{
 		}
 	}
 	
-	public void setEndTime(boolean isMorning){
+	private void setEndTime(boolean isMorning){
 		if(isMorning){
 			endTimeOfDay = "AM";
 		}
@@ -296,7 +302,7 @@ public class Course implements Comparable<Course>{
 	 * @return whether a time conflict exists between the passed course
 	 * and this course.
 	 */
-	public boolean conflictsWith(Course course) {
+	boolean conflictsWith(Course course) {
 		boolean conflicting = false;
 
 		//stores the details of the class we are attempting to add
@@ -420,7 +426,7 @@ public class Course implements Comparable<Course>{
 	 * with, if there is a time conflict.
 	 * @param name the name of the class this course conflicts with.
 	 */
-	public void setConflict(String name){
+	private void setConflict(String name){
 		conflictingCourse = name;
 	}
 
@@ -429,7 +435,7 @@ public class Course implements Comparable<Course>{
 	 * This method determines the length of the class in multiples of five.
 	 * @return the amount of five minutes in the class length.
 	 */
-	public int length(){
+	int length(){
 		int minuteCount;
 		int totalHrs;
 		int totalMins;
@@ -543,51 +549,51 @@ public class Course implements Comparable<Course>{
 	}
 
 
-	public int getCredits(){
+	int getCredits(){
 		return credits;
 	}
 	
-	public String getName(){
+	String getName(){
 		return courseName;
 	}
 	
-	public String getLocation(){
+	String getLocation(){
 		return location;
 	}
 	
-	public String getTitle(){
+	String getTitle(){
 		return courseTitle;
 	}
 	
-	public int getStartHr(){
+	int getStartHr(){
 		return startHour;
 	}
 	
-	public int getStartMin(){
+	int getStartMin(){
 		return startMinute;
 	}
 	
-	public int getEndHr(){
+	int getEndHr(){
 		return endHour;
 	}
 	
-	public int getEndMin(){
+	int getEndMin(){
 		return endMinute;
 	}
 	
-	public String getStartTimeOfDay(){
+	String getStartTimeOfDay(){
 		return startTimeOfDay;
 	}
 	
-	public String getEndTimeOfDay(){
+	String getEndTimeOfDay(){
 		return endTimeOfDay;
 	}
 	
-	public String getConflict(){
+	String getConflict(){
 		return conflictingCourse;
 	}
 	
-	public String getDay(){
+	String getDay(){
 		return day;
 	}
 	
