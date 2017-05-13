@@ -1,5 +1,6 @@
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.io.File;
 import java.util.Collections;
@@ -20,9 +21,9 @@ public class Schedule {
      * Constructs a new schedule.
      * @param file the .csv file containing the schedule information.
      * @throws FileNotFoundException if the .csv file cannot be found in the files directory.
-     * @throws IllegalFileException if the .csv file has improper formatting.
+     * @throws IllegalFileFormatException if the .csv file has improper formatting.
      */
-    Schedule(String file) throws FileNotFoundException, IllegalFileException{
+    Schedule(String file) throws FileNotFoundException, IllegalFileFormatException {
         for(int i = 0; i < 7; i++){
             week.add(new ArrayList<>());
         }
@@ -35,9 +36,9 @@ public class Schedule {
      * This helper method reads in the .csv file containing the schedule information.
      * @param fileName the name of the schedule file.
      * @throws FileNotFoundException if the .csv file cannot be found in the files directory.
-     * @throws IllegalFileException if the .csv file has improper formatting.
+     * @throws IllegalFileFormatException if the .csv file has improper formatting.
      */
-    private void readSchedule(String fileName) throws FileNotFoundException, IllegalFileException{
+    private void readSchedule(String fileName) throws FileNotFoundException, IllegalFileFormatException {
         Scanner file = new Scanner(new File(fileName));
 
         while(file.hasNextLine()) {
@@ -47,14 +48,6 @@ public class Schedule {
     }
 
 
-    boolean isNewCourse(Course course){
-        for(Course event : classes){
-            if(event.getTitle().equals(course.getTitle())){
-                return false;
-            }
-        }
-        return true;
-    }
     /**
      * This method adds a non-conflicting course to the schedule.
      * It also updates the credit count.
@@ -67,7 +60,7 @@ public class Schedule {
             return;
         }
 
-        if(isNewCourse(course)){
+        if(isNew(course, classes)){
             credits += course.getCredits();
         }
         classes.add(course);
@@ -97,7 +90,7 @@ public class Schedule {
         //if it has not been rejected before and removes
         //the class from other weekdays.
         else{
-            if(isNewConflict(course)){
+            if(isNew(course, conflictingCourses)){
                 conflictingCourses.add(course);
             }
             removeConflictingCourses(course);
@@ -110,15 +103,10 @@ public class Schedule {
      * added to the schedule.
      */
     private void removeConflictingCourses(Course event){
-        for(int i = 0; i < classes.size(); i++){
-            int daySize = classes.size();
 
-            for(int j = 0; j < daySize; j++){
-                if(classes.get(j).getName().equals(event.getName())){
-                    credits -= classes.get(j).getCredits();
-                    classes.remove(j);
-                    daySize--;
-                }
+        for(Iterator<Course> i = classes.iterator(); i.hasNext();) {
+            if(i.next().getName().equals(event.getName())){
+                i.remove();
             }
         }
     }
@@ -136,7 +124,7 @@ public class Schedule {
 
         //determines if the class is not already in our list of
         //conflicting classes
-        if(!isNewConflict(event)){
+        if(!isNew(event, conflictingCourses)){
             return true;
         }
 
@@ -172,7 +160,7 @@ public class Schedule {
             isValid = false;
         }
 
-        if(!isValid && isNewConflict(event)){
+        if(!isValid && isNew(event, invalidCourses)){
             invalidCourses.add(event);
         }
 
@@ -181,14 +169,15 @@ public class Schedule {
 
 
     /**
-     * This helper method determines if a rejected
-     * course has already been added to the list of invalid courses.
+     * This helper method determines if a given course
+     * is part of a given ArrayList of courses.
      * @param event the course in question.
-     * @return whether the course has been rejected before.
+     * @param arrayList the ArrayList to check.
+     * @return whether the course has already been added to the ArrayList.
      */
-    private boolean isNewConflict(Course event){
+    private boolean isNew(Course event, ArrayList<Course> arrayList){
 
-        for(Course lecture : conflictingCourses){
+        for(Course lecture : arrayList){
             if(lecture.getName().equals(event.getName())){
                 return false;
             }
@@ -280,8 +269,8 @@ public class Schedule {
                 }
             }
 
-            //adds space between week days only if it is not the end of the week.
-            if(i != 6 && !week.get(i).isEmpty()){
+            //adds space between week days only if it is part of the schedule.
+            if(!week.get(i).isEmpty()){
                 display += "\n\n\n\n";
             }
         }

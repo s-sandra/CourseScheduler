@@ -4,7 +4,7 @@ import java.util.ArrayList;
  * This class creates the visual representation for a schedule.
  * @author Sandra Shtabnaya
  */
-public class SchedulePrinter {
+class SchedulePrinter {
     private String weekDay;
     private String[] weekDays = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"};
     private int numClasses;
@@ -17,7 +17,7 @@ public class SchedulePrinter {
     /**
      * Constructs a SchedulePrinter.
      */
-    public SchedulePrinter(){}
+    SchedulePrinter(){}
 
 
     /**
@@ -28,7 +28,7 @@ public class SchedulePrinter {
      * @param latest the latest class in the week day.
      * @return the header for the week day.
      */
-    public String makeHeader(int day, int numClasses, Course earliest, Course latest){
+    String makeHeader(int day, int numClasses, Course earliest, Course latest){
         weekDay = weekDays[day];
         this.numClasses = numClasses;
         this.earliest = earliest;
@@ -220,7 +220,7 @@ public class SchedulePrinter {
      * @return the timeline for the course, represented by dots and
      * followed by meeting times.
      */
-    public String makeTimelineFor(Course event){
+    String makeTimelineFor(Course event){
         String minutes = makeTimelineHeaderFor(event);
         minutes += makeLine(event);
         minutes += getMeetingTimes(event);
@@ -348,7 +348,7 @@ public class SchedulePrinter {
             times += sHr + ":0" + sMin + " " + sTime + " - ";
         }
         else{
-            times += sHr + ":" + sMin + " " + sTime + " - ";;
+            times += sHr + ":" + sMin + " " + sTime + " - ";
         }
 
         //if the ending minute is one digit.
@@ -356,7 +356,7 @@ public class SchedulePrinter {
             times += eHr + ":0" + eMin + " " + eTime;
         }
         else{
-            times += eHr + ":" + eMin + " " + eTime;;
+            times += eHr + ":" + eMin + " " + eTime;
         }
 
         return times;
@@ -365,13 +365,12 @@ public class SchedulePrinter {
 
     /**
      * Returns the time between and location of this course and the next, if applicable.
-     * @return the information under the walking times header.
      * @param event the course for which to generate walking times.
      * @param nextClass the course after the current course. If the current course is
      * the last, then next is null.
      * @return the walking times and destinations of the given course.
      */
-    public String getWalkingTimesFor(Course event, Course nextClass){
+    String getWalkingTimesFor(Course event, Course nextClass){
         String walkingTimes = "";
 
         int sHrGap = event.getEndHr();

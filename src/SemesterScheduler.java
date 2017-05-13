@@ -14,7 +14,7 @@ public class SemesterScheduler {
 			e.printStackTrace();
 			System.exit(22);
 		}
-		catch(IllegalFileException e){
+		catch(IllegalFileFormatException e){
 			System.out.println(e.getMessage());
 			System.exit(22);
 		}

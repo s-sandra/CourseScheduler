@@ -5,32 +5,31 @@ import java.util.Scanner;
 * This class stores attributes for a class in a schedule.
 * @author Sandra Shtabnaya
 */
-
-public class Course implements Comparable<Course>{
+public class Course implements Comparable<Course>, Cloneable{
 	private int startHour;
 	private int startMinute;
 	private int endHour;
 	private int endMinute;
 	private int credits;
-	private String startTimeOfDay;
-	private String endTimeOfDay;
+	private String startTimeOfDay; //AM or PM start time.
+	private String endTimeOfDay; //AM or PM end time.
 	private String courseName; //stores the course department and number.
 	private String courseTitle; //stores the name of the course
-	private ArrayList<String> locations = new ArrayList<>(); //stores the meeting places of the course.
+	private ArrayList<String> locations = new ArrayList<>(); //stores the meeting places of the course, if more than one.
 	private String location; //stores the meeting place of the course.
-	private String conflictingCourse;
+	private String conflictingCourse; //the name of the course it conflicts with.
 	private String day;
 	private int differingTimes; //stores the amount of different meeting times.
-	private Schedule schedule;
+	private Schedule schedule; //the schedule the course belongs to.
 
 
 	/**
 	 * Creates a new course from a schedule file.
 	 * @param file the Scanner reading the .csv file.
 	 * @param sch the Schedule the course belongs to.
-	 * @throws IllegalFileException if the schedule file has improper formatting.
+	 * @throws IllegalFileFormatException if the schedule file has improper formatting.
 	 */
-	public Course(Scanner file, Schedule sch) throws IllegalFileException{
+	public Course(Scanner file, Schedule sch) throws IllegalFileFormatException {
 		schedule = sch;
 		String line = file.nextLine();
 		differingTimes = countMeetingTimes(line);
@@ -43,12 +42,12 @@ public class Course implements Comparable<Course>{
 		if((line.toUpperCase().contains("ONLINE") || line.toUpperCase().contains("TBA"))
 				&& differingTimes != -2){
 			file.close();
-			throw new IllegalFileException("Check commas.");
+			throw new IllegalFileFormatException("Check commas.");
 		}
 		else if(differingTimes < 0 && (!line.toUpperCase().contains("ONLINE")
 				&& !line.toUpperCase().contains("TBA"))){
 			file.close();
-			throw new IllegalFileException("Check commas.");
+			throw new IllegalFileFormatException("Check commas.");
 		}
 
 		parseCourse(line);
@@ -99,8 +98,9 @@ public class Course implements Comparable<Course>{
 	 * This helper method parses a line from the schedule file and
 	 * sets the appropriate values for the class.
 	 * @param line the line containing the course information.
+	 * @throws IllegalFileFormatException if the file contains invalid information.
 	 */
-	private void parseCourse(String line){
+	private void parseCourse(String line) throws IllegalFileFormatException{
 
 		Scanner file = new Scanner(line);
 		file.useDelimiter(",");
@@ -131,8 +131,9 @@ public class Course implements Comparable<Course>{
 	 * This helper method reads in the string
 	 * containing a class' meeting times.
 	 * @param file the Scanner reading the csv file.
+	 * @throws IllegalFileFormatException if the file contains invalid information.
 	 */
-	private void parseTimes(Scanner file){
+	private void parseTimes(Scanner file) throws IllegalFileFormatException{
 		String meetingDays;
 		String startTime;
 		String endTime;
@@ -157,17 +158,13 @@ public class Course implements Comparable<Course>{
 				endHour = parseHour(endTime);
 				endMinute = parseMinute(endTime);
 				setEndTime(isMorning(endTime));
-
-				if(locations.size() > 1){
-					location = locations.get(0);
-					locations.remove(0);
-				}
-				else{
-					location = locations.get(0);
-				}
+				location = locations.get(0);
 
 				//adds the course to the schedule.
-				schedule.addCourse(this);
+				try{
+					schedule.addCourse((Course) this.clone());
+				}
+				catch(CloneNotSupportedException e){}
 
 				//if the meetingDays string still has another
 				//week day
@@ -176,6 +173,11 @@ public class Course implements Comparable<Course>{
 				} else {
 					meetingDays = "";
 				}
+			}
+
+			//if the course has more than one meeting place,
+			if(locations.size() > 1){
+				locations.remove(0);
 			}
 		}
 	}
@@ -264,9 +266,9 @@ public class Course implements Comparable<Course>{
 	}
 
 	
-	private void setDay(char date){
+	private void setDay(char date) throws IllegalFileFormatException{
 		if(date == 'M'){
-				day = "Monday";
+			day = "Monday";
 		}
 		else if(date == 'T'){
 			day = "Tuesday";
@@ -282,6 +284,9 @@ public class Course implements Comparable<Course>{
 		}
 		else if(date == 'S'){
 			day = "Saturday";
+		}
+		else{
+			throw new IllegalFileFormatException("For " + courseName + ": " + date + " is not a valid weekday.");
 		}
 	}
 	
@@ -315,10 +320,10 @@ public class Course implements Comparable<Course>{
 
 		//stores the details of the class we are attempting to add
 		int addingStartHour = course.getStartHr();
-		int addingEndHour = course.getEndHr();
 		int addingStartMin = course.getStartMin();
-		int addingEndMin = course.getEndMin();
 		String addingStartTime = course.getStartTimeOfDay();
+		int addingEndHour = course.getEndHr();
+		int addingEndMin = course.getEndMin();
 		String addingEndTime = course.getEndTimeOfDay();
 
 		//if the current class ends at the same time of day
@@ -569,13 +574,9 @@ public class Course implements Comparable<Course>{
 		return location;
 	}
 	
-	String getTitle(){
-		return courseTitle;
-	}
+	String getTitle(){ return courseTitle; }
 	
-	int getStartHr(){
-		return startHour;
-	}
+	int getStartHr(){ return startHour; }
 	
 	int getStartMin(){
 		return startMinute;
@@ -597,9 +598,7 @@ public class Course implements Comparable<Course>{
 		return endTimeOfDay;
 	}
 	
-	String getConflict(){
-		return conflictingCourse;
-	}
+	String getConflict(){ return conflictingCourse;}
 	
 	String getDay(){
 		return day;
