@@ -67,7 +67,10 @@ public class Schedule {
         String day = course.getDay();
 
 
-        if(day.equals("Monday") && !isConflicting(course, 0)){
+        if(day.equals("ONLINE") || day.equals("TBA")){
+            return;
+        }
+        else if(day.equals("Monday") && !isConflicting(course, 0)){
             week.get(0).add(course);
         }
         else if(day.equals("Tuesday") && !isConflicting(course, 1)){
@@ -103,9 +106,10 @@ public class Schedule {
      * added to the schedule.
      */
     private void removeConflictingCourses(Course event){
-
         for(Iterator<Course> i = classes.iterator(); i.hasNext();) {
-            if(i.next().getName().equals(event.getName())){
+            Course course = i.next();
+            if(course.getName().equals(event.getName())){
+                credits -= course.getCredits();
                 i.remove();
             }
         }
@@ -148,6 +152,9 @@ public class Schedule {
     private boolean hasValidTime(Course event){
         boolean isValid = true;
 
+        if(event.getDay().equals("ONLINE") || event.getDay().equals("TBA")){
+            return true;
+        }
         if(event.length() >= 60){
             isValid = false;
         }
@@ -211,6 +218,7 @@ public class Schedule {
             for(Course event: conflictingCourses){
                 report += "\n" + event.getTitle() + " conflicts with " + event.getConflict() + " on " + event.getDay();
             }
+            report += "\n";
         }
 
         if(invalidCourses.size() > 0){

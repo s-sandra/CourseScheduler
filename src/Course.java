@@ -115,10 +115,14 @@ public class Course implements Comparable<Course>, Cloneable{
 		//if the class is online, does not look for dates.
 		if(locations.get(0).toUpperCase().equals("ONLINE")){
 			courseTitle += " ONLINE";
+			day = "ONLINE";
+			schedule.addCourse(this);
 			return;
 		}
 		else if(locations.get(0).toUpperCase().equals("TBA")){
 			courseTitle += " TBA";
+			day = "TBA";
+			schedule.addCourse(this);
 			return;
 		}
 
