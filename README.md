@@ -7,7 +7,7 @@ classes and calculating time conflicts can become a real hassle. My CourseSchedu
 including its own useful modifications. It reads the file containing the student’s desired classes and outputs to the console a timeline 
 of courses for each applicable day of the week. The y-axis contains the hours of the day, and the x-axis the name of the course. The 
 timeline is split into five minute intervals denoted by a dot. It provides a visual representation of each class’ position in the day 
-by using brackets and equal signs. The scheduler also provides the student with the amount of time between classes, the meetines times of
+by using brackets and equal signs. The scheduler also provides the student with the amount of time between classes, the meeting times of
 classes and the locations of the current and next class. This allows the user to plan accordingly, helping determine if getting to the 
 next lecture on time is even possible. At the end of the schedule, the program outputs the names, titles and total credits of all the 
 added courses, and a list of any rejected classes and the courses which they conflicted with. My CourseScheduler program also utilizes 
