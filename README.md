@@ -18,20 +18,20 @@ To run the program, you must create a csv file containing your desired classes, 
 Each class will have its own line in the file. This information is intended to be pulled from the UMW course catalogue, with similar 
 formatting. The file format is as follows:
 
-*Name, Title, Credits, Hall & Room Number(s), Meeting Day(s), Meeting Time* 
+<blockquote>Name, Title, Credits, Hall & Room Number(s), Meeting Day(s), Meeting Time</blockquote>
 
 If there are irregular meeting days, add the following to the end of the line, repeating for each differing meeting day and time:<br>
-*, Additional Meeting Day(s), Additional Meeting Time*
+<blockquote>, Additional Meeting Day(s), Additional Meeting Time</blockquote>
 
 If the course is online, follow the below format:<br> 
-*Name, Title, Credits, ONLINE*
+<blockquote>Name, Title, Credits, ONLINE</blockquote>
 
 If the course location is yet to be announced, follow the following format:<br>
-*Name, Title, Credits, TBA*
+<blockquote>Name, Title, Credits, TBA</blockquote>
 
 ## Examples
-*CPSC 220, Computer Programming, 4, HCC 329, M, 2:00 PM – 4:00 PM, WF, 2:00 PM – 3:00 PM*<br>
-*PSYC 100, General Psychology, 3, MONR 116, MWF, 11:00am – 11:50am*
+<blockquote>CPSC 220, Computer Programming, 4, HCC 329, M, 2:00 PM – 4:00 PM, WF, 2:00 PM – 3:00 PM<br>
+PSYC 100, General Psychology, 3, MONR 116, MWF, 11:00am – 11:50am</blockquote>
 
 <b>Course Name</b></br> 
 This is the department abbreviation and number of the course (CPSC 220).
