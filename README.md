@@ -1,6 +1,6 @@
 # CourseScheduler
 
-<b>Description</b></br>
+## Description
 My program, CourseScheduler, serves to assistant users during the college course selection process, similar to the scheduler tool provided 
 in Banner during online registration. Since students do not have access to this tool until their appointed registration times, picking 
 classes and calculating time conflicts can become a real hassle. My CourseScheduler program has all the features of the Banner tool, 
@@ -13,7 +13,7 @@ next lecture on time is even possible. At the end of the schedule, the program o
 added courses, and a list of any rejected classes and the courses which they conflicted with. My CourseScheduler program also utilizes 
 the Course class, which stores the information of each course in the week. It makes a separate course object for each meeting day.   
 
-<b>Instructions</b></br>
+## Instructions
 To run the program, you must create a csv file containing your desired classes, and place its name as the command line argument. 
 Each class will have its own line in the file. This information is intended to be pulled from the UMW course catalogue, with similar 
 formatting. The file format is as follows:
@@ -29,7 +29,7 @@ If the course is online, follow the below format:<br>
 If the course location is yet to be announced, follow the following format:<br>
 *Name, Title, Credits, TBA*
 
-<b>Examples</b></br>
+## Examples
 *CPSC 220, Computer Programming, 4, HCC 329, M, 2:00 PM – 4:00 PM, WF, 2:00 PM – 3:00 PM*<br>
 *PSYC 100, General Psychology, 3, MONR 116, MWF, 11:00am – 11:50am*
 
