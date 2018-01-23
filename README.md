@@ -33,21 +33,21 @@ If the course location is yet to be announced, follow the following format:<br>
 <blockquote>CPSC 220, Computer Programming, 4, HCC 329, M, 2:00 PM – 4:00 PM, WF, 2:00 PM – 3:00 PM<br>
 PSYC 100, General Psychology, 3, MONR 116, MWF, 11:00am – 11:50am</blockquote>
 
-<b>Course Name</b></br> 
+### Course Name
 This is the department abbreviation and number of the course (CPSC 220).
 
-<b>Course Title</b></br>
+### Course Title
 This is the name of the course (Computer Programming and Problem Solving).
 
-<b>Hall and Room Number</b></br>
+### Hall and Room Number
 This is the location (it may be abbreviated) and room number of the class (HCC 329). 
 
-<b>Credits</b></br>
+### Credits
 The number of credit hours the class is worth (4).
 
-<b>Meeting Days</b></br>
+### Meeting Days
 The days of the week corresponding with its following meeting times. It will be a string containing the first letters of each 
 weekday, with Thursday denoted as “R”. 
 
-<b>Meeting Times</b></br>
+### Meeting Times
 The start and end times of the course, with AM/am or PM/pm. They must be separated with a dash (2:00 PM – 3:00 PM).
