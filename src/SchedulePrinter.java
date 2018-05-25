@@ -1,3 +1,7 @@
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 /**
@@ -32,7 +36,13 @@ class SchedulePrinter {
         weekDay = weekDays[day];
         this.numClasses = numClasses;
         this.earliest = earliest;
-        int earliestHr = earliest.getStartHr();
+        int earliestHr = earliest.getStartTime().getHour();
+
+        // LocalTime getHour() returns hour in 24 hour format.
+        if(earliestHr > 12){
+            earliestHr = earliestHr - 12;
+        }
+
         range = getScheduleRange(earliest, latest);
 
         //adjusts the table accordingly for uniform appearance.
@@ -51,46 +61,7 @@ class SchedulePrinter {
      * @return the length of the week day in five minute intervals.
      */
     private int getScheduleRange(Course earliest, Course latest){
-        int range = 0;
-        int latestHr = latest.getEndHr();
-        int latestMin = latest.getEndMin();
-        int earliestHr = earliest.getStartHr();
-
-        //if the earliest class starts in the morning and the latest class starts in the afternoon.
-        if(earliest.getStartTimeOfDay().equals("AM") && latest.getEndTimeOfDay().equals("PM")){
-
-            //calculates how many minutes the earliest class starts from noon.
-            range += (12 - earliestHr) * 60;
-
-            //if the latest class starts at noon.
-            if(latestHr == 12){
-
-                //calculates how many minutes the latest class starts from noon.
-                range += (12 - latestHr) * 60 + latestMin;
-            }
-            else{
-
-                //if the latest class is not at noon, converts its
-                //start time to minutes.
-                range += latestHr * 60 + latestMin;
-            }
-        }
-        else{
-
-            if(earliestHr == 12 && latestHr != 12){
-                range = latestHr * 60 + latestMin;
-            }
-
-            //if the earliest and latest classes start at the same
-            //part of the day, finds their difference, and converts to minutes.
-            else{
-                range = (latestHr - earliestHr) * 60 + latestMin;
-            }
-        }
-
-        range /= 5;
-
-        return range;
+        return Math.toIntExact(earliest.getStartTime().until(latest.getEndTime(), ChronoUnit.MINUTES) / 5);
     }
 
 
@@ -237,20 +208,20 @@ class SchedulePrinter {
      */
     private String makeLine(Course event){
         ArrayList<String> line = new ArrayList<>();
-        int startMin = getFiveMinuteStart(event);
-        int endMin = startMin + event.length();
+        int startDot = getDot(event.getStartTime());
+        int endDot = getDot(event.getEndTime());
 
         for(int i = 0; i <= range; i++){
 
             //if the current 5 minute count
             //is the start time
-            if(i == startMin){
+            if(i == startDot){
                 line.add("[");
             }
-            else if(i == endMin){
+            else if(i == endDot){
                 line.add("]");
             }
-            else if(i < startMin || i > endMin){
+            else if(i < startDot || i > endDot){
                 line.add(".");
             }
             else{
@@ -271,58 +242,11 @@ class SchedulePrinter {
     /**
      * This helper method calculates which dot in the timeline represents
      * the start time of the given course.
-     * @param added the course for which to find the start time.
-     * @return how many minutes the course's start time is from the earliest
-     * course's start time.
+     * @param time the time for which to assign a dot.
+     * @return how many dots the time is from the earliest course's start time.
      */
-    private int getFiveMinuteStart(Course added){
-        int start;
-        int addedStartHr = added.getStartHr();
-        int addedStartMin = added.getStartMin();
-        String addedStartTime = added.getStartTimeOfDay();
-        int earliestStartHr = earliest.getStartHr();
-        String earliestStartTime = earliest.getStartTimeOfDay();
-
-        //if the current and earliest classes begin in the
-        //same time of day
-        if(earliestStartTime.equals(addedStartTime)){
-
-            if(earliestStartHr == addedStartHr){
-                start = 0;
-            }
-
-            //if the earliest class begins at noon, convert the
-            //current class start time to five minutes
-            else if(earliestStartHr == 12){
-                start = addedStartHr * 12;
-            }
-
-            //find the difference between the earliest and
-            //current class times and converts to five minutes.
-            else{
-                start = (addedStartHr - earliestStartHr) * 12;
-            }
-        }
-
-        //if the current and earliest classes begin at different
-        //times of the day, find how many hours left until noon
-        //for the earliest class start hour and add it to the start
-        //hour of the latest class.
-        else{
-
-            //if the added class starts at noon
-            if(addedStartHr == 12){
-                start = (12 - earliestStartHr) * 12;
-            }
-            else{
-                start = ((12 - earliestStartHr) + addedStartHr) * 12;
-            }
-        }
-
-        //adds the start minutes to the count
-        start += (addedStartMin / 5);
-
-        return start;
+    private int getDot(LocalTime time){
+        return Math.toIntExact(earliest.getStartTime().until(time, ChronoUnit.MINUTES) / 5);
     }
 
 
@@ -332,34 +256,8 @@ class SchedulePrinter {
      * @return a visual representation of the class' meeting times.
      */
     private String getMeetingTimes(Course event){
-        int sHr = event.getStartHr();
-        int sMin = event.getStartMin();
-        String sTime = event.getStartTimeOfDay();
-
-        int eHr = event.getEndHr();
-        int eMin = event.getEndMin();
-        String eTime = event.getEndTimeOfDay();
-
-        //prints out the start and end times of the class.
-        String times = "       ";
-
-        //if the starting minute is one digit
-        if(sMin < 10){
-            times += sHr + ":0" + sMin + " " + sTime + " - ";
-        }
-        else{
-            times += sHr + ":" + sMin + " " + sTime + " - ";
-        }
-
-        //if the ending minute is one digit.
-        if(eMin < 10){
-            times += eHr + ":0" + eMin + " " + eTime;
-        }
-        else{
-            times += eHr + ":" + eMin + " " + eTime;
-        }
-
-        return times;
+        DateTimeFormatter dtf = new DateTimeFormatterBuilder().appendPattern("hh:mm a").toFormatter(); // accepts am/pm time format.
+        return "      " + dtf.format(event.getStartTime()) + " - " + dtf.format(event.getEndTime());
     }
 
 
@@ -373,19 +271,12 @@ class SchedulePrinter {
     String getWalkingTimesFor(Course event, Course nextClass){
         String walkingTimes = "";
 
-        int sHrGap = event.getEndHr();
-        int sMinGap = event.getEndMin();
-        String sTimeGap = event.getStartTimeOfDay();
-
         if(nextClass != null){
-            int eHrGap = nextClass.getStartHr();
-            int eMinGap = nextClass.getStartMin();
-            String eTimeGap = nextClass.getStartTimeOfDay();
 
             //determines the time until next class and prints out the walking times and destinations.
-            int walkingTime = getFiveMinuteBreak(eHrGap, eMinGap, eTimeGap, sHrGap, sMinGap, sTimeGap);
+            int walkingTime = Math.toIntExact(event.getEndTime().until(nextClass.getStartTime(), ChronoUnit.MINUTES));
             String breakTime = convertToHours(walkingTime);
-            walkingTimes = "       " + breakTime + " to get from " + event.getLocation() +
+            walkingTimes = "       " + breakTime + " from " + event.getLocation() +
                     " to " + nextClass.getLocation();
         }
 
@@ -401,12 +292,8 @@ class SchedulePrinter {
      */
     private String convertToHours(int walkingTime){
         String time = "";
-        int hours = 0;
-
-        while(walkingTime >= 60){
-            hours++;
-            walkingTime -= 60;
-        }
+        int hours = walkingTime / 60;
+        int minutes = walkingTime % 60;
 
         if(hours > 0){
             if(hours > 1){
@@ -417,27 +304,10 @@ class SchedulePrinter {
             }
         }
 
-        if(walkingTime > 0){
-            time += String.valueOf(walkingTime) + " mins";
+        if(minutes > 0){
+            time += String.valueOf(minutes) + " mins";
         }
 
         return time;
-
-    }
-
-
-    /**
-     * This helper method determines the amount of
-     * time (in terms of five minutes) between two classes.
-     * @param sHr the starting hour.
-     * @param sMin the starting minute.
-     * @param sTime the starting time of day.
-     * @param eHr the ending hour.
-     * @param eMin the ending minute.
-     * @param eTime the ending time of day.
-     */
-    private int getFiveMinuteBreak(int eHr, int eMin, String eTime, int sHr, int sMin, String sTime){
-        Course course = new Course(sHr, sMin, sTime, eHr, eMin, eTime);
-        return course.length() * 5;
     }
 }

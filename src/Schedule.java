@@ -1,4 +1,7 @@
 import java.io.FileNotFoundException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -10,6 +13,7 @@ import java.util.Collections;
  * @author Sandra Shtabnaya
  */
 public class Schedule {
+    DateTimeFormatter dtf = new DateTimeFormatterBuilder().appendPattern("h:mm a").toFormatter(); // accepts am/pm time format.
     private ArrayList<ArrayList<Course>> week = new ArrayList<>(); //stores all the classes in a week.
     private ArrayList<Course> conflictingCourses = new ArrayList<>(); //stores all the conflicting classes in the file.
     private ArrayList<Course> invalidCourses = new ArrayList<>(); //stores all classes with invalid descriptions.
@@ -66,7 +70,6 @@ public class Schedule {
         classes.add(course);
         String day = course.getDay();
 
-
         if(day.equals("ONLINE") || day.equals("TBA")){
             return;
         }
@@ -76,7 +79,7 @@ public class Schedule {
         else if(day.equals("Tuesday") && !isConflicting(course, 1)){
             week.get(1).add(course);
         }
-        else if(day.equals("Wednesday") && !isConflicting(course, 2)){
+        else if(day.equals("Wednesday") && !isConflicting(course, 2)) {
             week.get(2).add(course);
         }
         else if(day.equals("Thursday") && !isConflicting(course, 3)){
@@ -151,19 +154,19 @@ public class Schedule {
      */
     private boolean hasValidTime(Course event){
         boolean isValid = true;
+        LocalTime lateClass = LocalTime.parse("11:00 PM", dtf);
+        LocalTime earlyClass = LocalTime.parse("7:00 AM", dtf);
+        LocalTime addingStartTime = event.getStartTime();
 
         if(event.getDay().equals("ONLINE") || event.getDay().equals("TBA")){
             return true;
         }
+
         if(event.length() >= 60){
             isValid = false;
         }
-        else if(event.getStartTimeOfDay().equals("PM") && event.getStartHr() < 12
-                && event.getStartHr() > 10){
-            isValid = false;
-        }
-        else if(event.getStartTimeOfDay().equals("AM") && (event.getStartHr() == 12 ||
-                event.getStartHr() < 7)){
+        else if((addingStartTime.isAfter(lateClass) || addingStartTime.equals(lateClass)) ||
+                (addingStartTime.isBefore(earlyClass) || addingStartTime.equals(earlyClass))){
             isValid = false;
         }
 
@@ -224,9 +227,8 @@ public class Schedule {
         if(invalidCourses.size() > 0){
             report += "\n----ERRORS-----------------------------";
             for(Course event: invalidCourses){
-                report += "\n" + event.getTitle() + " cannot last from " + event.getStartHr() + " "
-                        + event.getStartTimeOfDay() + " to " + event.getEndHr() + " "
-                        + event.getEndTimeOfDay();
+                report += "\n" + event.getTitle() + " cannot last from " + dtf.format(event.getStartTime())
+                        + " to " + dtf.format(event.getEndTime()) + " ";
             }
         }
 
