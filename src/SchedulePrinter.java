@@ -246,12 +246,13 @@ class SchedulePrinter {
      * @return how many dots the time is from the earliest course's start time.
      */
     private int getDot(LocalTime time){
-        return Math.toIntExact(earliest.getStartTime().until(time, ChronoUnit.MINUTES) / 5);
+        LocalTime earliestHour = LocalTime.of(earliest.getStartTime().getHour(), 0);
+        return Math.toIntExact(earliestHour.until(time, ChronoUnit.MINUTES) / 5);
     }
 
 
     /**
-     * This helper method returns the meetings times of a given class.
+     * This helper method returns the meeting times of a given class.
      * @param event the class for which to generate meeting times.
      * @return a visual representation of the class' meeting times.
      */
