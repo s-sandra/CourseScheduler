@@ -31,7 +31,7 @@ If the course location is yet to be announced, follow the following format:<br>
 
 ## Examples
 <blockquote>CPSC 220, Computer Programming, 4, HCC 329, M, 2:00 PM – 4:00 PM, WF, 2:00 PM – 3:00 PM<br>
-PSYC 100, General Psychology, 3, MONR 116, MWF, 11:00am – 11:50am</blockquote>
+PSYC 100, General Psychology, 3, MONR 116, MWF, 11:00 am – 11:50 am</blockquote>
 
 ### Course Name
 This is the department abbreviation and number of the course (CPSC 220).
