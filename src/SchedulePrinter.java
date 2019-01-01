@@ -61,7 +61,11 @@ class SchedulePrinter {
      * @return the length of the week day in five minute intervals.
      */
     private int getScheduleRange(Course earliest, Course latest){
-        return Math.toIntExact(earliest.getStartTime().until(latest.getEndTime(), ChronoUnit.MINUTES) / 5);
+        LocalTime startTime = earliest.getStartTime();
+
+        //if the earliest class doesn't start on the dot, get the offset from the beginning of the hour.
+        int offset = Math.toIntExact(LocalTime.of(startTime.getHour(), 0).until(startTime, ChronoUnit.MINUTES)) / 5;
+        return Math.toIntExact(startTime.until(latest.getEndTime(), ChronoUnit.MINUTES) / 5) + offset;
     }
 
 
